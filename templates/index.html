@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Security URL Shield</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">
+            <i class="fas fa-user-shield"></i> <span>URL PHISHERMEN</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/" class="active">Home</a></li>
+            <li><a href="javascript:void(0)" onclick="showTips()">Security Tips</a></li>
+            <li><a href="javascript:void(0)" onclick="showReport()">Report Scam</a></li>
+        </ul>
+    </nav>
+
+    <div class="overlay"></div>
+    
+    <div class="main-wrapper">
+        
+        <div class="info-banner">
+            <div class="info-card safe">
+                <i class="fas fa-check-circle"></i>
+                <h4>REAL WEBSITE</h4>
+                <p>Verified identity, <strong>HTTPS</strong> encryption, and valid legal certificates.</p>
+            </div>
+            <div class="info-card warning">
+                <i class="fas fa-search"></i>
+                <h4>FAKE WEBSITE</h4>
+                <p>Mimics branding but uses <strong>suspicious domains</strong> or typos to deceive.</p>
+            </div>
+            <div class="info-card danger">
+                <i class="fas fa-user-secret"></i>
+                <h4>FRAUD/SCAM</h4>
+                <p>Confirmed <strong>phishing</strong> intent. Designed to steal passwords and money.</p>
+            </div>
+        </div>
+
+        <div class="glass-container">
+            <div class="content-header">
+                <h1>🛡️ URL Safety Checker</h1>
+                <p class="instruction" style="text-align: center; color: #2ecc71; margin-bottom: 20px; font-weight: bold;">
+                    <i class="fas fa-arrow-down"></i> PASTE YOUR URL INSIDE THE BOX BELOW <i class="fas fa-arrow-down"></i>
+                </p>
+            </div>
+
+            <form method="POST" class="scanner-form" style="max-width: 800px; margin: 0 auto;">
+                <div class="input-group">
+                    <i class="fas fa-link"></i>
+                    <input type="text" name="url" placeholder="Paste suspicious URL here..." required>
+                </div>
+                <button type="submit" class="analyze-btn">
+                    <span>ANALYZE URL</span>
+                    <i class="fas fa-microchip"></i>
+                </button>
+            </form>
+
+            {% if result %}
+            <div class="results-container">
+                <div class="results-section">
+                    <div class="verdict-card" style="border-left: 5px solid {{ result.color }}">
+                        <div class="verdict-text">
+                            <span class="label">SECURITY STATUS:</span>
+                            <h2 style="color: {{ result.color }}">{{ result.verdict }}</h2>
+                        </div>
+                    </div>
+
+                    <div class="analysis-details">
+                        <h3><i class="fas fa-list-check"></i> Analysis Details:</h3>
+                        <ul>
+                            {% for reason in result.reasons %}
+                            <li><i class="fas fa-caret-right"></i> {{ reason }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    {% if result.history %}
+                    <div class="analysis-details">
+                        <h3><i class="fas fa-history"></i> Domain History:</h3>
+                        <ul>
+                            <li><strong>Registrar:</strong> {{ result.history.registrar }}</li>
+                            <li><strong>Date:</strong> {{ result.history.creation_date }}</li>
+                            <li><strong>Country:</strong> {{ result.history.country }}</li>
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% if result.ssl %}
+                    <div class="analysis-details">
+                        <h3><i class="fas fa-certificate"></i> SSL/TLS Security Certificate:</h3>
+                        <ul style="color: #2ecc71;">
+                            <li><i class="fas fa-shield-alt"></i> <strong>Issued By:</strong> {{ result.ssl.issuer }}</li>
+                            <li><i class="fas fa-clock"></i> <strong>Expires On:</strong> {{ result.ssl.expiry }}</li>
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div style="grid-column: 1 / -1; text-align: center; margin-top: 20px;">
+                        <button onclick="downloadReport()" class="analyze-btn" style="background: #2ecc71;">
+                            <span>DOWNLOAD REPORT</span>
+                            <i class="fas fa-file-download"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="results-container" style="margin-top: 0; background: rgba(15, 23, 42, 0.4);">
+            <div class="results-section" style="display: block;">
+                <h3 style="color: #fff; margin-bottom: 20px;"><i class="fas fa-history"></i> Recent Activity Log</h3>
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #2ecc71;">
+                            <th style="padding: 15px;">TIME</th>
+                            <th style="padding: 15px;">URL</th>
+                            <th style="padding: 15px;">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in history_list %}
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 15px; color: #8892b0;">{{ item.time }}</td>
+                            <td style="padding: 15px; font-family: monospace;">{{ item.url[:50] }}{% if item.url|length > 50 %}...{% endif %}</td>
+                            <td style="padding: 15px; color: {{ item.color }}; font-weight: bold;">{{ item.verdict }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" style="padding: 30px; text-align: center; color: #495670;">No recent scans yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+       <footer class="site-footer">
+    <div class="footer-content">
+        <h3 class="footer-title">GET IN TOUCH</h3>
+        
+        <div class="team-member reveal">
+            <div class="member-photo">
+                <img src="https://via.placeholder.com/100" alt="Yash Gupta">
+            </div>
+            <div class="member-info">
+                <h4>Yash Gupta</h4>
+                <div class="member-links">
+                    <a href="https://github.com/yashstack-bot" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/yash-gupta-423820363" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="mailto:gyash7068@gmail.com"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <hr class="footer-divider">
+
+        <div class="team-member reveal">
+            <div class="member-photo">
+                <img src="https://via.placeholder.com/100" alt="Team Member 2">
+            </div>
+            <div class="member-info">
+                <h4>Saksham Gupta</h4>
+                <div class="member-links">
+                    <a href="#" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <p class="footer-bottom-text">templates/index.html | System Active: 2026</p>
+    </div>
+</footer>
+    </div>
+
+    <div id="tipsModal" class="modal" style="display: none;">
+        <div class="glass-container modal-content" style="max-width: 700px; margin: auto; border-radius: 20px;">
+            <span class="close" onclick="closeModal('tipsModal')">&times;</span>
+            <h2 style="color: #2ecc71; margin-bottom: 20px;"><i class="fas fa-shield-virus"></i> Professional Security Tips</h2>
+            <ul id="tipsList" style="text-align: left; list-style: none; line-height: 2;"></ul>
+        </div>
+    </div>
+
+    <div id="reportModal" class="modal" style="display: none;">
+        <div class="glass-container modal-content" style="max-width: 700px; margin: auto; border-radius: 20px;">
+            <span class="close" onclick="closeModal('reportModal')">&times;</span>
+            <h2 style="color: #ff4d4d; margin-bottom: 20px;"><i class="fas fa-bug"></i> Report a Malicious URL</h2>
+            <div class="input-group">
+                <input type="text" id="reportUrl" placeholder="Enter scam URL here..." style="width: 100%; padding: 15px; background: rgba(0,0,0,0.5); border: 1px solid #ff4d4d; color: white; border-radius: 8px;">
+            </div>
+            <button onclick="submitReport()" class="analyze-btn" style="margin-top: 20px;">SUBMIT REPORT</button>
+        </div>
+    </div>
+
+    <script>
+    // 1. Scanning Animation Logic
+    document.querySelector('.scanner-form').onsubmit = function() {
+        const btn = document.querySelector('.analyze-btn');
+        btn.innerHTML = '<span>SCANNING ENCRYPTED DATA...</span> <i class="fas fa-spinner fa-spin"></i>';
+        btn.style.background = '#3498db'; 
+        // No preventDefault() here so the form actually submits to Python
+    };
+
+    // 2. Modal Controls - FIXED: Centering and proper display
+    function showTips() {
+        fetch('/security-tips')
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('tipsList');
+                list.innerHTML = data.tips.map(tip => 
+                    `<li><i class="fas fa-check-circle" style="color: #2ecc71;"></i> ${tip}</li>`
+                ).join('');
+                
+                document.getElementById('tipsModal').style.display = 'flex';
+            });
+    }
+
+    function showReport() {
+        document.getElementById('reportModal').style.display = 'flex';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    // Close modals when clicking outside the box
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = "none";
+        }
+    }
+
+    // 3. Simulated Scam Reporting
+    function submitReport() {
+        const url = document.getElementById('reportUrl').value;
+        if(!url) { alert("Please enter a URL"); return; }
+        
+        fetch('/report-scam', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({url: url})
+        }).then(res => res.json())
+        .then(data => {
+            alert("REPORT RECEIVED: " + data.message);
+            closeModal('reportModal');
+        });
+    }
+
+    // 4. Download Report Function
+    function downloadReport() {
+        const verdict = "{{ result.verdict }}";
+        const url = "{{ result.url }}";
+        const reasons = `{{ result.reasons|join('\n- ') if result else '' }}`;
+        
+        let reportContent = `URL SAFETY REPORT\n`;
+        reportContent += `==============================\n`;
+        reportContent += `Target URL: ${url}\n`;
+        reportContent += `Security Status: ${verdict}\n\n`;
+        reportContent += `Analysis Details:\n- ${reasons}\n`;
+
+        {% if result and result.history %}
+        reportContent += `\nDomain History:\n`;
+        reportContent += `- Registrar: {{ result.history.registrar }}\n`;
+        reportContent += `- Registered On: {{ result.history.creation_date }}\n`;
+        {% endif %}
+
+        {% if result and result.ssl %}
+        reportContent += `\nSSL/TLS Certificate:\n`;
+        reportContent += `- Issued By: {{ result.ssl.issuer }}\n`;
+        reportContent += `- Expires On: {{ result.ssl.expiry }}\n`;
+        {% endif %}
+
+        reportContent += `\n==============================\n`;
+        reportContent += `Report Generated by URL PHISHERMEN (2026)`;
+
+        const element = document.createElement('a');
+        const file = new Blob([reportContent], {type: 'text/plain'});
+        element.href = URL.createObjectURL(file);
+        element.download = "URL_Safety_Report.txt";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+    </script>
+</body>
+</html>
