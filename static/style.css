@@ -633,16 +633,85 @@ input[type="text"]:focus {
 
 
 
-footer {
+/* --- Professional Footer Styles --- */
+.site-footer {
+    background: rgba(10, 15, 25, 0.95);
+    padding: 80px 10%;
+    width: 100%;
+    border-top: 2px solid rgba(46, 204, 113, 0.3);
+}
 
-    padding: 60px 0;
-
-    color: white;
-
-    font-size: 0.9rem;
-
+.footer-title {
     text-align: center;
+    color: #2ecc71;
+    letter-spacing: 3px;
+    margin-bottom: 50px;
+}
 
+.team-member {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    margin: 40px 0;
+}
+
+.member-photo img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #ff2e63;
+    object-fit: cover;
+    box-shadow: 0 0 15px rgba(233, 69, 96, 0.4);
+}
+
+.member-info h4 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+}
+
+.member-links {
+    display: flex;
+    gap: 20px;
+}
+
+.member-links a {
+    color: #fff;
+    font-size: 1.5rem;
+    transition: 0.3s ease;
+}
+
+.member-links a:hover {
+    color: #2ecc71;
+    transform: scale(1.2);
+}
+
+.footer-divider {
+    border: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    width: 50%;
+    margin: 0 auto;
+}
+
+.footer-bottom-text {
+    text-align: center;
+    margin-top: 50px;
+    color: #495670;
+    font-size: 0.8rem;
+}
+
+/* --- Scroll Pop-Up Animation --- */
+.reveal {
+    position: relative;
+    transform: translateY(50px);
+    opacity: 0;
+    transition: all 0.8s ease;
+}
+
+.reveal.active {
+    transform: translateY(0);
+    opacity: 1;
 }
 
 
