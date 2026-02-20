@@ -714,7 +714,44 @@ input[type="text"]:focus {
     opacity: 1;
 }
 
+/* Styling for the personal description */
+.member-info {
+    text-align: left;
+    max-width: 500px; /* Limits width so text doesn't stretch too far */
+}
 
+.member-desc {
+    font-size: 0.95rem;
+    color: #8892b0;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+/* Adjust the team member container for better alignment */
+.team-member {
+    display: flex;
+    align-items: flex-start; /* Aligns photo with the top of the name */
+    justify-content: center;
+    gap: 40px;
+    margin: 50px 0;
+    padding: 0 5%;
+}
+
+/* Mobile Responsiveness for Footer */
+@media (max-width: 768px) {
+    .team-member {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+    .member-info {
+        text-align: center;
+    }
+    .member-links {
+        justify-content: center;
+    }
+}
 
 @keyframes fadeIn {
 
