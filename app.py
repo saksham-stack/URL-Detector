@@ -12,7 +12,7 @@ app = Flask(__name__)
 s = SafeBrowsing('AIzaSyDSv6pI7EErD0pWEU35ehlvHPa0hwG7TwM')
 
 # Create a global list to store session history (In a full app, this would be a database)
-scan_history = []
+scan_history = [];
 
 def check_url(url):
     score = 0
