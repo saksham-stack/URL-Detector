@@ -139,10 +139,19 @@
 
             {% if result %}
             <div class="results-container">
+                {% set status = result.verdict|upper %}
+                {% if "SAFE" in status or "REAL" in status %}
+                    {% set score = 0 %}
+                {% elif "SUSPICIOUS" in status or "WARNING" in status %}
+                    {% set score = 50 %}
+                {% else %}
+                    {% set score = 100 %}
+                {% endif %}
+
                 <div class="risk-meter-wrapper reveal">
-                    <div class="gauge-circle" id="riskGauge" style="--percentage: {{ 0 if result.verdict == 'SAFE' else (50 if result.verdict == 'SUSPICIOUS' else 100) }}%">
+                    <div class="gauge-circle" id="riskGauge" style="--percentage: {{ score }}%; border: 2px solid {{ result.color }};">
                         <div class="gauge-text" id="riskValue">
-                            {{ 0 if result.verdict == 'SAFE' else (50 if result.verdict == 'SUSPICIOUS' else 100) }}%
+                            {{ score }}%
                         </div>
                     </div>
                     <p style="margin-top: 10px; color: #8892b0; font-size: 0.9rem; font-weight: bold;">THREAT PROBABILITY</p>
@@ -290,18 +299,14 @@
         return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     }
 
-    // NEW: Explicitly hide modals on page load to prevent auto-popup
     document.addEventListener('DOMContentLoaded', function() {
         const tipsModal = document.getElementById('tipsModal');
         const reportModal = document.getElementById('reportModal');
         if (tipsModal) tipsModal.style.display = 'none';
         if (reportModal) reportModal.style.display = 'none';
-        
-        // Ensure reveal animations check on initial load
         reveal();
     });
 
-    // UPDATED: Added Scanner Line and Button Logic
     document.querySelector('.scanner-form').onsubmit = function() {
         const btn = document.getElementById('analyzeBtn');
         const scanLine = document.getElementById('globalScanLine');
@@ -310,11 +315,9 @@
         btn.style.background = '#3498db';
         btn.disabled = true;
         
-        // Show scan line animation
         if (scanLine) scanLine.style.display = 'block';
     };
 
-    // Original Modal & Download Logic (Untouched)
     function showTips() {
         fetch('/security-tips')
             .then(res => res.json())
@@ -331,10 +334,9 @@
     function showReport() { document.getElementById('reportModal').style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     
-    // Close modals when clicking outside the content
     window.onclick = function(event) { 
         if (event.target.classList.contains('modal')) {
-            event.target.style.display = "none"; 
+            event.target.style.display = "none";
         }
     }
 
