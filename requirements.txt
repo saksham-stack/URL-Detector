@@ -1,0 +1,8 @@
+Flask==3.0.0
+Flask-WTF==1.2.1
+Flask-Limiter==3.5.0
+python-dotenv==1.0.0
+python-whois==0.8.0
+pysafebrowsing==0.1.2
+Werkzeug==3.0.1
+MarkupSafe==2.1.3
